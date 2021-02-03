@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const MiniCssExtractPLugin = require("mini-css-extract-plugin");
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 require("dotenv").config();
 
@@ -68,6 +69,13 @@ module.exports = {
         })
       : () => {},
     !isDev ? new WebpackManifestPlugin() : () => {},
+    !isDev
+      ? new CleanWebpackPlugin({
+          cleanOnceBeforeBuildPatterns: [
+            path.resolve(__dirname, "src/server/public"),
+          ],
+        })
+      : () => {},
     new MiniCssExtractPLugin({
       filename: isDev ? "assets/app.css" : "assets/app-[fullhash].css",
     }),
