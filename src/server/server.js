@@ -14,6 +14,8 @@ import serverRoutes from "../frontend/routes/serverRoutes";
 import reducer from "../frontend/reducers";
 import initialState from "../frontend/initialState";
 
+import getManifest from "./getManifest";
+
 dotenv.config();
 
 const { ENV, PORT } = process.env;
@@ -30,12 +32,19 @@ if (ENV === "development") {
   app.use(webpackDevMidlleware(compiler, serverConfig));
   app.use(webpackHotMidlleware(compiler));
 } else {
+  app.use((req, res, next) => {
+    if (!req.hashManifest) req.hashManifest = getManifest();
+    next();
+  });
   app.use(express.static(`${__dirname}/public`));
   app.use(helmet());
   app.use(helmet.permittedCrossDomainPolicies());
 }
 
-const setResponse = (html, preloadedState) => {
+const setResponse = (html, preloadedState, manifest) => {
+  const mainStyles = manifest ? manifest["main.css"] : "assets/app.css";
+  const mainBuild = manifest ? manifest["main.js"] : "assets/app.js";
+
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -43,7 +52,7 @@ const setResponse = (html, preloadedState) => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Platzi Video</title>
-        <link rel="stylesheet" href="assets/app.css" type="text/css" />
+        <link rel="stylesheet" href=${mainStyles} type="text/css" />
       </head>
       <body>
         <div id="app">
@@ -55,7 +64,7 @@ const setResponse = (html, preloadedState) => {
             "\\u003c"
           )}
         </script>
-        <script src="assets/app.js" type="text/javascript"></script>
+        <script src=${mainBuild} type="text/javascript"></script>
       </body>
     </html>
   `;
@@ -73,7 +82,7 @@ const renderApp = (req, res) => {
   );
 
   res.removeHeader("x-powered-by");
-  res.send(setResponse(html, preloadedState));
+  res.send(setResponse(html, preloadedState, req.hashManifest));
 };
 
 app.get("*", renderApp);

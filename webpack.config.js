@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const MiniCssExtractPLugin = require("mini-css-extract-plugin");
 const CompressionWebpackPlugin = require("compression-webpack-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 
 require("dotenv").config();
 
@@ -19,7 +20,7 @@ module.exports = {
   mode: process.env.ENV,
   output: {
     path: path.resolve(__dirname, "src/server/public"),
-    filename: "assets/app.js",
+    filename: isDev ? "assets/app.js" : "assets/app-[fullhash].js",
     publicPath: "/",
   },
   devServer: {
@@ -66,8 +67,9 @@ module.exports = {
           filename: "[path][base].gz",
         })
       : () => {},
+    !isDev ? new WebpackManifestPlugin() : () => {},
     new MiniCssExtractPLugin({
-      filename: "assets/app.css",
+      filename: isDev ? "assets/app.css" : "assets/app-[fullhash].css",
     }),
   ],
 };
