@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import webpack from "webpack";
+import helmet from "helmet";
 
 import React from "react";
 import { renderToString } from "react-dom/server";
@@ -28,9 +29,13 @@ if (ENV === "development") {
 
   app.use(webpackDevMidlleware(compiler, serverConfig));
   app.use(webpackHotMidlleware(compiler));
+} else {
+  app.use(express.static(`${__dirname}/public`));
+  app.use(helmet());
+  app.use(helmet.permittedCrossDomainPolicies());
 }
 
-const setResponse = (html) => {
+const setResponse = (html, preloadedState) => {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -44,6 +49,12 @@ const setResponse = (html) => {
         <div id="app">
           ${html}
         </div>
+        <script>
+          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(
+            /</g,
+            "\\u003c"
+          )}
+        </script>
         <script src="assets/app.js" type="text/javascript"></script>
       </body>
     </html>
@@ -52,6 +63,7 @@ const setResponse = (html) => {
 
 const renderApp = (req, res) => {
   const store = createStore(reducer, initialState);
+  const preloadedState = store.getState();
   const html = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.url} context={{}}>
@@ -60,7 +72,8 @@ const renderApp = (req, res) => {
     </Provider>
   );
 
-  res.send(setResponse(html));
+  res.removeHeader("x-powered-by");
+  res.send(setResponse(html, preloadedState));
 };
 
 app.get("*", renderApp);
