@@ -10,7 +10,7 @@ import logo from "../assets/static/logo-platzi-video-BW2.png";
 import userIcon from "../assets/static/user-icon.png";
 
 const Header = (props) => {
-  const { user, isHome, isLogin, isRegister } = props;
+  const { user, isHome, isLogin, isRegister, isNotFound } = props;
   const hasUser = Object.keys(user).length > 0;
 
   const handleClick = (event) => {
@@ -20,6 +20,7 @@ const Header = (props) => {
   const headerClass = classNames("header", {
     isLogin,
     isRegister,
+    isNotFound,
   });
 
   return (
