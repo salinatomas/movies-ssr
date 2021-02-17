@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { loginRequest, logoutRequest } from "../actions";
+import { loginUser, logoutRequest } from "../actions";
 
 import "../assets/styles/components/Login.scss";
 import googleIcon from "../assets/static/google-icon.png";
@@ -10,7 +10,7 @@ import twitterIcon from "../assets/static/twitter-icon.png";
 import Header from "../components/Header";
 
 const Login = (props) => {
-  const [form, setForm] = useState({ email: "" });
+  const [form, setForm] = useState({ email: "", rememberMe: false });
 
   const handleChange = (event) => {
     setForm({
@@ -19,10 +19,16 @@ const Login = (props) => {
     });
   };
 
+  const handleCheckbox = (event) => {
+    setForm({
+      ...form,
+      rememberMe: event.target.checked,
+    });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    props.loginRequest(form);
-    props.history.push("/");
+    props.loginUser(form, "/");
   };
 
   return (
@@ -46,10 +52,17 @@ const Login = (props) => {
               placeholder="Contraseña"
               onChange={handleChange}
             />
-            <button className="button">Iniciar sesión</button>
+            <button className="button" type="submit">
+              Iniciar sesión
+            </button>
             <div className="login__container--remember-me">
               <label>
-                <input type="checkbox" id="cbox1" value="first_checkbox" />
+                <input
+                  type="checkbox"
+                  id="cbox1"
+                  value="first_checkbox"
+                  onChange={handleCheckbox}
+                />
                 Recuérdame
               </label>
               <a href="/">Olvidé mi contraseña</a>
@@ -57,10 +70,14 @@ const Login = (props) => {
           </form>
           <section className="login__container--social-media">
             <div>
-              <img src={googleIcon} /> Inicia sesión con Google
+              <a href="/auth/google">
+                <img src={googleIcon} /> Inicia sesión con Google
+              </a>
             </div>
             <div>
-              <img src={twitterIcon} /> Inicia sesión con Twitter
+              <a href="/auth/twitter">
+                <img src={twitterIcon} /> Inicia sesión con Twitter
+              </a>
             </div>
           </section>
           <p className="login__container--register">
@@ -73,7 +90,7 @@ const Login = (props) => {
 };
 
 const mapDispatchToProps = {
-  loginRequest,
+  loginUser,
   logoutRequest,
 };
 

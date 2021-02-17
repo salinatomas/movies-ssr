@@ -9,22 +9,44 @@ import plusIcon from "../assets/static/plus-icon.png";
 import removeIcon from "../assets/static/remove-icon.png";
 import { Link } from "react-router-dom";
 
+import axios from "axios";
+
 const CarouselItem = (props) => {
-  const { id, title, cover, year, contentRating, duration, isList } = props;
+  const {
+    userId,
+    _id,
+    title,
+    cover,
+    year,
+    contentRating,
+    duration,
+    isList,
+  } = props;
 
   const handleSetFavorite = () => {
-    props.setFavorite({
-      id,
-      title,
-      cover,
-      year,
-      contentRating,
-      duration,
-    });
+    axios
+      .post("/user-movies", { userId, movieId: _id })
+      .then(({ data: userMovie }) =>
+        props.setFavorite({
+          userMovieId: userMovie.data,
+          _id,
+          title,
+          cover,
+          year,
+          contentRating,
+          duration,
+        })
+      )
+      .catch((err) => console.log(err));
   };
 
-  const handleDeleteFavorite = (itemId) => {
-    props.deleteFavorite(itemId);
+  const handleDeleteFavorite = (userMovieId, movieId) => {
+    axios
+      .delete(`/user-movies/${userMovieId}`)
+      .then(({ data }) => {
+        props.deleteFavorite(movieId);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -32,7 +54,7 @@ const CarouselItem = (props) => {
       <img className="carousel-item__img" src={cover} alt={title} />
       <div className="carousel-item__details">
         <div>
-          <Link to={`/player/${id}`}>
+          <Link to={`/player/${props._id}`}>
             <img
               className="carousel-item__details--img"
               src={playIcon}
@@ -45,7 +67,7 @@ const CarouselItem = (props) => {
               className="carousel-item__details--img"
               src={removeIcon}
               alt="Remove Icon"
-              onClick={() => handleDeleteFavorite(id)}
+              onClick={() => handleDeleteFavorite(props.userMovieId, props._id)}
             />
           ) : (
             <img
@@ -73,10 +95,15 @@ CarouselItem.propTypes = {
   duration: PropTypes.number,
 };
 
+const mapStateToProps = (state) => {
+  return {
+    userId: state.user.id,
+  };
+};
+
 const mapDispatchToProps = {
   setFavorite,
   deleteFavorite,
 };
 
-// export default CarouselItem;
-export default connect(null, mapDispatchToProps)(CarouselItem);
+export default connect(mapStateToProps, mapDispatchToProps)(CarouselItem);

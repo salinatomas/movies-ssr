@@ -13,14 +13,31 @@ import Layout from "../frontend/components/Layout";
 import serverRoutes from "../frontend/routes/serverRoutes";
 
 import reducer from "../frontend/reducers";
-import initialState from "../frontend/initialState";
 
 import getManifest from "./getManifest";
 
+import coockieParser from "cookie-parser";
+import passport from "passport";
+import session from "express-session";
+import axios from "axios";
+import jwt from "jsonwebtoken";
+
+import userMovies from "./routes/userMovies";
+import auth from "./routes/auth";
+
 dotenv.config();
 
-const { ENV, PORT } = process.env;
 const app = express();
+const { ENV, PORT } = process.env;
+
+// parsers
+app.use(express.json());
+app.use(coockieParser());
+
+// session
+app.use(session({ secret: process.env.SESSION_SECRET }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 if (ENV === "development") {
   console.log("Development config");
@@ -71,13 +88,76 @@ const setResponse = (html, preloadedState, manifest) => {
   `;
 };
 
-const renderApp = (req, res) => {
+const renderApp = async (req, res) => {
+  let initialState;
+
+  const { token } = req.cookies;
+  const verifyToken = jwt.decode(token) || {
+    sub: { email: undefined, name: undefined, id: undefined },
+  };
+
+  const email = req.cookies.email || verifyToken.sub.email;
+  const name = req.cookies.name || verifyToken.sub.name;
+  const id = req.cookies.id || verifyToken.sub.id;
+
+  try {
+    let { data: userMovies } = await axios({
+      url: `${process.env.API_URL}/api/user-movies?userId=${id}`,
+      headers: { Authorization: `Bearer ${token}` },
+      method: "get",
+    });
+
+    userMovies = userMovies.data;
+
+    let { data: movieList } = await axios({
+      url: `${process.env.API_URL}/api/movies`,
+      headers: { Authorization: `Bearer ${token}` },
+      method: "get",
+    });
+
+    movieList = movieList.data;
+
+    initialState = {
+      user: {
+        email,
+        name,
+        id,
+      },
+      playing: {},
+      myList: userMovies.map((userMovie) => {
+        const favoriteMovie = movieList.find(
+          (item) => item._id === userMovie.movieId
+        );
+
+        return {
+          ...favoriteMovie,
+          userMovieId: userMovie._id,
+        };
+      }),
+      trends: movieList.filter(
+        (movie) => movie.contentRating === "PG" && movie._id
+      ),
+      originals: movieList.filter(
+        (movie) => movie.contentRating === "G" && movie._id
+      ),
+    };
+  } catch (err) {
+    initialState = {
+      user: {},
+      playing: {},
+      myList: [],
+      trends: [],
+      originals: [],
+    };
+  }
+
   const store = createStore(reducer, initialState);
   const preloadedState = store.getState();
+  const isLogged = initialState.user.id;
   const html = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.url} context={{}}>
-        <Layout>{renderRoutes(serverRoutes)}</Layout>
+        <Layout>{renderRoutes(serverRoutes(isLogged))}</Layout>
       </StaticRouter>
     </Provider>
   );
@@ -86,6 +166,9 @@ const renderApp = (req, res) => {
   res.send(setResponse(html, preloadedState, req.hashManifest));
 };
 
+// routes
+userMovies(app);
+auth(app);
 app.get("*", renderApp);
 
 app.listen(PORT, (err) => {

@@ -7,15 +7,13 @@ import NotFound from "./NotFound";
 
 const Player = (props) => {
   const { id } = props.match.params;
-  const hasPLaying = Object.keys(props.playing).length > 0;
+  const hasPlaying = Object.keys(props.playing).length > 0;
 
   useEffect(() => {
     props.getVideoSource(id);
   }, []);
 
-  console.log(props.playing);
-
-  return hasPLaying ? (
+  return hasPlaying ? (
     <div className="Player">
       <video controls autoPlay>
         <source src={props.playing.source} type="video/mp4" />

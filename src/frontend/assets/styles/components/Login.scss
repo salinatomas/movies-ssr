@@ -41,9 +41,16 @@
     &--social-media > div {
       /*Todos los divs dentro de .login__container--social-media*/
       margin-bottom: 10px;
-      display: flex;
-      align-items: center;
       font-size: 14px;
+      a {
+        display: flex;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
     }
     .login__container--social-media > div > img {
       width: 30px;
