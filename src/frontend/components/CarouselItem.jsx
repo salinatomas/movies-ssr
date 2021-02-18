@@ -14,6 +14,7 @@ import axios from "axios";
 const CarouselItem = (props) => {
   const {
     userId,
+    myList,
     _id,
     title,
     cover,
@@ -24,6 +25,11 @@ const CarouselItem = (props) => {
   } = props;
 
   const handleSetFavorite = () => {
+    const exist = myList.find((item) => item._id === _id);
+    if (exist) {
+      console.log("exist", exist);
+      return false;
+    }
     axios
       .post("/user-movies", { userId, movieId: _id })
       .then(({ data: userMovie }) =>
@@ -100,6 +106,7 @@ CarouselItem.propTypes = {
 const mapStateToProps = (state) => {
   return {
     userId: state.user.id,
+    myList: state.myList,
   };
 };
 

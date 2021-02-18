@@ -3,12 +3,6 @@ import { actions } from "../actions";
 const reducer = (state, action) => {
   switch (action.type) {
     case actions.setFavorite:
-      const exist = state.myList.find(
-        (item) => item._id === action.payload._id
-      );
-      if (exist) {
-        return { ...state };
-      }
       return {
         ...state,
         myList: [...state.myList, action.payload],
