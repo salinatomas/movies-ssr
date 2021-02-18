@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const actions = {
+  setLoading: "SET_LOADING",
   setFavorite: "SET_FAVORITE",
   deleteFavorite: "DELETE_FAVORITE",
   loginRequest: "LOGIN_REQUEST",
@@ -8,6 +9,13 @@ export const actions = {
   registerRequest: "REGISTER_REQUEST",
   getVideoSource: "GET_VIDEO_SOURCE",
   setError: "SET_ERROR",
+};
+
+export const setLoading = (payload) => {
+  return {
+    type: actions.setLoading,
+    payload,
+  };
 };
 
 export const setFavorite = (payload) => {

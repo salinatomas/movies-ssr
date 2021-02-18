@@ -30,6 +30,7 @@ const CarouselItem = (props) => {
       console.log("exist", exist);
       return false;
     }
+
     axios
       .post("/user-movies", { userId, movieId: _id })
       .then(({ data: userMovie }) =>

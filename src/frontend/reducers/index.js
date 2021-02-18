@@ -2,6 +2,11 @@ import { actions } from "../actions";
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case actions.setLoading:
+      return {
+        ...state,
+        loading: action.payload,
+      };
     case actions.setFavorite:
       return {
         ...state,

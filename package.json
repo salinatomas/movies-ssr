@@ -6,7 +6,11 @@
   "scripts": {
     "server": "npx json-server initialState.json",
     "build": "webpack-cli --config webpack.config.js",
+    "start": "node src/server/index.js",
     "start:dev": "nodemon src/server/index"
+  },
+  "engines": {
+    "node": "12.16.x"
   },
   "keywords": [],
   "author": "Tomás Salina",

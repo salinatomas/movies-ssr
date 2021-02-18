@@ -77,6 +77,7 @@ const renderApp = async (req, res) => {
         id,
       },
       playing: {},
+      loading: false,
       myList: userMovies.map((userMovie) => {
         const favoriteMovie = movieList.find(
           (item) => item._id === userMovie.movieId
