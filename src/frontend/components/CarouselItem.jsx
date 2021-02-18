@@ -70,12 +70,14 @@ const CarouselItem = (props) => {
               onClick={() => handleDeleteFavorite(props.userMovieId, props._id)}
             />
           ) : (
-            <img
-              className="carousel-item__details--img"
-              src={plusIcon}
-              alt="Plus Icon"
-              onClick={handleSetFavorite}
-            />
+            <a href="#favorites">
+              <img
+                className="carousel-item__details--img"
+                src={plusIcon}
+                alt="Plus Icon"
+                onClick={handleSetFavorite}
+              />
+            </a>
           )}
         </div>
         <p className="carousel-item__details--title">{title}</p>

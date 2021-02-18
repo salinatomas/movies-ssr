@@ -15,3 +15,14 @@
     }
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .footer {
+    margin-top: 50px;
+    align-items: flex-start;
+    flex-direction: column;
+    a {
+      margin-bottom: 10px;
+    }
+  }
+}

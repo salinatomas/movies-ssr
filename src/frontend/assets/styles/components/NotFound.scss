@@ -4,7 +4,9 @@
   text-align: center;
   justify-content: center;
   flex-direction: column;
-  min-height: calc(100vh - 160px);
+  min-height: calc(100vh - 200px);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .error h1 {
   font-size: 80px;
@@ -29,4 +31,10 @@
 }
 .error p {
   color: white;
+}
+
+@media only screen and (max-width: 600px) {
+  .error {
+    min-height: calc(100vh - 250px);
+  }
 }

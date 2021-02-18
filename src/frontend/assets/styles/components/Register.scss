@@ -42,3 +42,13 @@
     }
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .register__container {
+    min-height: 550px;
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+    width: 100%;
+  }
+}

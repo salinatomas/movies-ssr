@@ -79,3 +79,13 @@
     }
   }
 }
+
+@media only screen and (max-width: 600px) {
+  .login__container {
+    min-height: 550px;
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+    width: 100%;
+  }
+}
