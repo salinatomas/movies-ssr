@@ -39,6 +39,7 @@ if (ENV === "development") {
   app.use(webpackDevMidlleware(compiler, serverConfig));
   app.use(webpackHotMidlleware(compiler));
 } else {
+  console.log("Production config");
   app.use((req, res, next) => {
     if (!req.hashManifest) req.hashManifest = getManifest();
     next();
