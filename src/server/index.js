@@ -11,4 +11,4 @@ require("asset-require-hook")({
   name: "/assets/[hash].[ext]",
 });
 
-require("./src/server/server");
+require("./server");
