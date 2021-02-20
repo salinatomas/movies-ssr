@@ -17,10 +17,9 @@ passport.use(
         url: `${process.env.API_URL}/api/auth/sign-provider`,
         method: "post",
         data: {
-          name: profile.name,
-          email:
-            profile.email || profile.emails[0].value || profile._json.email,
-          password: profile.id,
+          name: profile._json.name || profile.name,
+          email: profile._json.email || profile.emails[0].value,
+          password: profile._json.sub || profile.id,
           apiKeyToken: process.env.API_KEY_TOKEN,
         },
       });
